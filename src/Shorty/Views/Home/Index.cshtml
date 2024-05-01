@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1>Shorty</h1>
+    <p>Simple. Clean. Short.</p>
+    <div class="input-box">
+        <input type="text" id="url" placeholder="Enter a long URL here." />
+        <button id="shorten"><img src="~/img/icons/darshan/short_icon.svg" alt="Shorten Icon"></button>
+    </div>
+    
+    <div class="output-box">
+        <span>Shortened URL: </span>
+        <div class="output">
+            <span id="shortened-url">https://britto.tech/7yxT2</span>
+            <div id="copy">
+                <img src="~/img/icons/material/copy_filled.svg" alt="Copy Icon">
+            </div>
+        </div>
+
+    </div>
+    
+    <p class="bottom-p">Shorty is a simple URL shortener that allows you to shorten long URLs into short, easy-to-share links.</p>
+</div>
+
+<style>
+    :root {
+        color-scheme: dark;
+    }
+    h1{
+        color: #BCC2FF;
+        font-size: 6em;
+        margin-top: 80px;
+    }
+    p, span{
+        color: #BCC2FF;
+        font-size: 0.75em;
+        font-weight: 500;
+    }
+    .input-box{
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    input{
+        width: 50%;
+        height: 40px;
+        border-radius: 20px 0 0 20px;
+        border: 4px solid #BCC2FF;
+        padding: 20px;
+        font-size: 1em;
+        background-color: #20202A;
+        color: #BCC2FF;
+    }
+    input:focus{
+        outline: none;
+    }
+    button{
+        height: 40px;
+        border-radius: 0 20px 20px 0;
+        border: 4px solid #BCC2FF;
+        padding: 20px;
+        font-size: 1em;
+        background-color: #BCC2FF;
+        color: black;
+        margin-left: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    button img{
+        width: 20px;
+        height: 20px;
+    }
+/*    button:hover{
+        background-color: #20202A;
+        color: #BCC2FF;
+    }*/
+    
+    .bottom-p{
+        margin-top: 20px;
+        color: #BCC2FF;
+        font-size: 0.75em;
+        font-weight: 500;
+    }
+    
+    .output-box{
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    #copy{
+        color: #BCC2FF;
+        background-color: transparent;
+        padding: 0;
+        border: none;
+        margin-left: 5px;
+    }
+    #copy img{
+        width: 16px;
+        height: 16px;
+        filter: invert(82%) sepia(25%) saturate(4500%) hue-rotate(193deg) brightness(109%) contrast(103%);
+    }
+    
+    #shortened-url{
+        color: #BCC2FF;
+        font-size: 0.75em;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    .output{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-left: 12px;
+        padding: 5px 10px;
+    }
+    .output:hover{
+        background-color: #131318;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    
+</style>
