@@ -1,9 +1,7 @@
 using System.Threading.RateLimiting;
-using System.Web;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Data;
-using Microsoft.EntityFrameworkCore.Design;
 
 var builder = WebApplication.CreateBuilder(args);
 
