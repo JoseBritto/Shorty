@@ -6,7 +6,7 @@ using Shorty.Models;
 namespace Shorty.Areas.Api;
 
 [Area("Api")]
-[Route("[area]/v1.0/[action]")]
+[Route("[area]/v1/[action]")]
 [Route("[area]/[action]")]
 public class V1Controller : Controller
 {
