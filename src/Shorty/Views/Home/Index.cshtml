@@ -7,15 +7,19 @@
     <p>Simple. Clean. Short.</p>
     <div class="input-box">
         <input type="text" id="url" placeholder="Enter a long URL here." />
-        <button id="shorten"><img src="~/img/icons/darshan/short_icon.svg" alt="Shorten Icon"></button>
+        <button id="shorten">
+            <img src="~/img/icons/darshan/short_icon.svg" alt="Shorten Icon">
+            <img class="no-display spin-img" src="~/img/icons/material/autorenew_filled.svg" alt="Loading Icon">
+        </button>
     </div>
     
-    <div class="output-box">
+    <div class="output-box hide-ui" id="url-output-box">
         <span>Shortened URL: </span>
-        <div class="output">
-            <span id="shortened-url">https://britto.tech/7yxT2</span>
+        <div class="output" id="copy-div">
+            <span id="shortened-url">https://britto.tech/WRONG</span>
             <div id="copy">
                 <img src="~/img/icons/material/copy_filled.svg" alt="Copy Icon">
+                <img class="no-display" src="~/img/icons/material/check_filled.svg" alt="Copy Icon">
             </div>
         </div>
 
@@ -27,6 +31,9 @@
 <style>
     :root {
         color-scheme: dark;
+    }
+    .no-display{
+        display: none;
     }
     h1{
         color: #BCC2FF;
@@ -129,4 +136,84 @@
         cursor: pointer;
     }
     
+    .spin-img{
+        animation: spin 2s linear infinite;
+    }
+    
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(180deg); }
+        99% { transform: rotate(359deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    
 </style>
+
+<script>
+    let done = false;
+    document.getElementById("shorten").addEventListener("click", function() {
+        shorten();
+    });
+    document.getElementById("url").addEventListener("keydown", function(e){
+        if(e.key === "Enter"){
+            shorten();
+        } else if (done){
+            resetAll();
+        }
+    });
+    
+    function shorten(){
+        let url = document.getElementById("url").value;
+        
+        if (url === ""){
+            return;
+        }
+        
+        document.getElementById("shorten").children[0].classList.add("no-display");
+        document.getElementById("shorten").children[1].classList.remove("no-display");
+        
+        fetch("/api/v1/create?url=" + url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status !== 200){
+                console.log("Error: " + response.status);
+                return;
+            }
+            done = true;
+            return response.json();
+        }).then(response => {
+            if (response === undefined){
+                return;
+            }
+            let shortenedUrlElement = document.getElementById("shortened-url");
+            shortenedUrlElement.innerHTML = response.shortUrl;
+            let outputBox = document.getElementById("url-output-box");
+            outputBox.classList.remove("hide-ui");
+            document.getElementById("shorten").children[0].classList.remove("no-display");
+            document.getElementById("shorten").children[1].classList.add("no-display");
+        });
+    }
+    
+    function resetAll(){
+        let outputBox = document.getElementById("url-output-box");
+        outputBox.classList.add("hide-ui");
+        done = false;
+    }
+    
+    document.getElementById("copy-div").addEventListener("click", function(){
+        let shortenedUrl = document.getElementById("shortened-url");
+        navigator.clipboard.writeText(shortenedUrl.innerHTML);
+        let copyButton = document.getElementById("copy");
+        copyButton.children[0].classList.add("no-display");
+        copyButton.children[1].classList.remove("no-display");
+        setTimeout(function(){
+            copyButton.children[0].classList.remove("no-display");
+            copyButton.children[1].classList.add("no-display");
+        }, 1000);
+    });
+
+</script>

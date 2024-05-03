@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Data;
 using Shorty.Models;
@@ -8,6 +9,7 @@ namespace Shorty.Areas.Api;
 [Area("Api")]
 [Route("[area]/v1/[action]")]
 [Route("[area]/[action]")]
+[EnableRateLimiting("unrestricted")]
 public class V1Controller : Controller
 {
     
@@ -21,6 +23,7 @@ public class V1Controller : Controller
     }
     
     [HttpGet]
+    [EnableRateLimiting("restricted")]
     public async Task<object> Create(string url, long? expiry, string? minimal)
     {
         Uri uri;

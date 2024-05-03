@@ -1,4 +1,6 @@
+using System.Threading.RateLimiting;
 using System.Web;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Data;
 using Microsoft.EntityFrameworkCore.Design;
@@ -12,6 +14,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlite("Data Source=shorty.db");
 });
+
+builder.Services.AddRateLimiter(_ => _
+    .AddFixedWindowLimiter(policyName: "restricted", options =>
+    {
+        options.PermitLimit = 20;
+        options.Window = TimeSpan.FromMinutes(30);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 1;
+    }));
+
+builder.Services.AddRateLimiter(_ => _
+    .AddFixedWindowLimiter(policyName: "unrestricted", options =>
+    {
+        options.PermitLimit = 60;
+        options.Window = TimeSpan.FromMinutes(60);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 1;
+    }));
 
 var app = builder.Build();
 
@@ -41,5 +61,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseRateLimiter();
 
 app.Run();
