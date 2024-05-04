@@ -20,6 +20,8 @@ public class V1Controller : Controller
     {
         _db = db;
         _logger = logger;
+        
+        _db.Database.Migrate();
     }
     
     [HttpGet]
