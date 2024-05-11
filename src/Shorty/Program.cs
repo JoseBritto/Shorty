@@ -3,6 +3,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Data;
+using Shorty.Helpers;
 
 [assembly: InternalsVisibleTo("Shorty.Tests")]
 
@@ -63,5 +64,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.UseRateLimiter();
+
+ConfigHelper.EnsureUrlSettingsConfigValidity(app.Configuration);
 
 app.Run();
