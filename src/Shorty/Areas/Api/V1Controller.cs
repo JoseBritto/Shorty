@@ -1,7 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Shorty.Constants;
 using Shorty.Data;
+using Shorty.Helpers;
 using Shorty.Models;
 
 namespace Shorty.Areas.Api;
@@ -15,13 +18,16 @@ public class V1Controller : Controller
     
     private readonly AppDbContext _db;
     private readonly ILogger<V1Controller> _logger;
+    private readonly IConfiguration _config;
 
-    public V1Controller(AppDbContext db, ILogger<V1Controller> logger)
+    public V1Controller(AppDbContext db, ILogger<V1Controller> logger, IConfiguration config)
     {
         _db = db;
         _logger = logger;
-        
-        _db.Database.Migrate();
+        _config = config;
+
+        if(_db.Database.IsRelational())
+            _db.Database.Migrate();
     }
     
     [HttpGet]
@@ -65,7 +71,7 @@ public class V1Controller : Controller
         //TODO: After Version 1 release: Break the loop in that case and error out.
         
         var createdAt = DateTime.UtcNow;
-        var expiresAt = createdAt + TimeSpan.FromMinutes(expiry.Value);
+        var expiresAt = createdAt + CalculateExpiry(expiry);
         
         _logger.LogInformation("Short URL created: {ShortUrlId}\nExpires At: {expiresAt}", shortUrlId, expiresAt);
         
@@ -86,7 +92,7 @@ public class V1Controller : Controller
 
         _logger.LogDebug("Data Saved for {urlId}", shortUrlId);
 
-        var shortLink = $"{Request.Scheme}://{Request.Host}/{shortUrlId}";
+        var shortLink = ConstructShortLink(shortUrlId);
         if (minimal != null && minimal != "n")
         {
             return shortLink;
@@ -98,6 +104,70 @@ public class V1Controller : Controller
             originalUrl = uri.AbsoluteUri,
             expiresAt = new DateTimeOffset(expiresAt, TimeSpan.Zero).ToUnixTimeSeconds()
         };
+    }
+
+    private TimeSpan CalculateExpiry(long? expiry)
+    {
+        var defaultExpiry = TimeSpan.FromDays(10);
+        if (_config[ConfigVar.SHORT_URL_DEFAULT_EXPIRY_MINUTES] != null)
+        {
+            if (long.TryParse(_config[ConfigVar.SHORT_URL_DEFAULT_EXPIRY_MINUTES], out var val) && val > 0)
+                defaultExpiry = TimeSpan.FromMinutes(val);
+            _logger.LogWarning("Invalid value for {configVar}. Using default value of {value}.", 
+                ConfigVar.SHORT_URL_DEFAULT_EXPIRY_MINUTES, defaultExpiry.TotalMinutes);
+        }
+
+        if (_config[ConfigVar.SHORT_URL_ALLOW_CUSTOM_EXPIRY] == null) 
+            return defaultExpiry;
+        
+        if (bool.TryParse(_config[ConfigVar.SHORT_URL_ALLOW_CUSTOM_EXPIRY], out var allow))
+        {
+            if (!allow)
+            {
+                if (expiry.HasValue)
+                    _logger.LogInformation("Custom expiry is disabled. Ignoring the expiry value.");
+                return defaultExpiry;
+            }
+            if (_config[ConfigVar.MAX_EXPIRY_MINUTES] != null)
+            {
+                if (long.TryParse(_config[ConfigVar.MAX_EXPIRY_MINUTES], out var maxExpiry) && maxExpiry > 0)
+                {
+                    if (expiry > maxExpiry)
+                    {
+                        _logger.LogWarning("Expiry value is more than the maximum allowed. Setting to maximum.");
+                        return TimeSpan.FromMinutes(maxExpiry);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Invalid value for {configVar}. Assuming no limit.",
+                        ConfigVar.MAX_EXPIRY_MINUTES);
+                }
+            }
+            if (_config[ConfigVar.MIN_EXPIRY_MINUTES] != null)
+            {
+                if (long.TryParse(_config[ConfigVar.MIN_EXPIRY_MINUTES], out var minExpiry) && minExpiry > 0)
+                {
+                    if (expiry < minExpiry)
+                    {
+                        _logger.LogWarning("Expiry value is less than the minimum allowed. Setting to minimum.");
+                        return TimeSpan.FromMinutes(minExpiry);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Invalid value for {configVar}. Assuming no limit.",
+                        ConfigVar.MIN_EXPIRY_MINUTES);
+                }
+
+            }
+            return expiry.HasValue ? TimeSpan.FromMinutes(expiry.Value) : defaultExpiry;
+        }
+
+        _logger.LogWarning("Invalid value for {configVar}. Assuming false.",
+            ConfigVar.SHORT_URL_ALLOW_CUSTOM_EXPIRY);
+        
+        return defaultExpiry;
     }
 
 
@@ -123,4 +193,13 @@ public class V1Controller : Controller
             return NotFound();
         return RedirectPreserveMethod(shortUrl.OriginalUrl);
     }
+    
+    internal string ConstructShortLink(string shortUrlId)
+    {
+        if(string.IsNullOrWhiteSpace(shortUrlId))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(shortUrlId));
+        var prefix = _config.GetShortUrlPrefix(Request.Scheme);
+        return prefix != null ? $"{prefix}{shortUrlId}" : $"{Request.Scheme}://{Request.Host}/{shortUrlId}";
+    }
+
 }
