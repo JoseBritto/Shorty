@@ -1,7 +1,10 @@
+using System.Runtime.CompilerServices;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Data;
+
+[assembly: InternalsVisibleTo("Shorty.Tests")]
 
 var builder = WebApplication.CreateBuilder(args);
 
