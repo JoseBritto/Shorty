@@ -181,7 +181,7 @@ public class V1Controller : Controller
             return BadRequest("Invalid Id");
         }
 
-        return obj.OriginalUrl;
+        return obj.OriginalUrl + "\n";
     }
 
     public async Task<IActionResult> Docs()
