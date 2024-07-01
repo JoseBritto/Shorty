@@ -95,7 +95,7 @@ public class V1Controller : Controller
         var shortLink = ConstructShortLink(shortUrlId);
         if (minimal != null && minimal != "n")
         {
-            return shortLink;
+            return shortLink + "\n";
         }
         
         return new
