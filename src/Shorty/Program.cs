@@ -49,7 +49,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 
-
 app.UseRouting();
 
 app.UseAuthorization();
@@ -66,5 +65,7 @@ app.MapControllerRoute(
 app.UseRateLimiter();
 
 ConfigHelper.EnsureUrlSettingsConfigValidity(app.Configuration);
+
+app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
 
 app.Run();
