@@ -184,6 +184,11 @@ public class V1Controller : Controller
         return obj.OriginalUrl;
     }
 
+    public async Task<IActionResult> Docs()
+    {
+        return View();
+    }
+
     [Route("/{shortUrlId}")]
     [HttpGet]
     public async Task<IActionResult> Redirect(string shortUrlId)
