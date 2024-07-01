@@ -32,8 +32,8 @@ public static class ConfigHelper
                     return;
                 throw new ConfigException("Only HTTP and HTTPS schemes are allowed for short URL prefix");
             }
+            throw new ConfigException("Short URL prefix is not a valid URL");
         }
-        throw new ConfigException("Short URL prefix is not a valid URL");
     }
 
 
