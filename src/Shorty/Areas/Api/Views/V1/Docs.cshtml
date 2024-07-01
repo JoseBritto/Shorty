@@ -4,29 +4,85 @@
 }
 
 <div class="text-center">
-    <h1>Shorty</h1>
-    <p>Simple. Clean. Short.</p>
-    <div class="input-box">
-        <input type="text" id="url" placeholder="Enter a long URL here." />
-        <button id="shorten">
-            <img src="~/img/icons/darshan/short_icon.svg" alt="Shorten Icon">
-            <img class="no-display spin-img" src="~/img/icons/material/autorenew_filled.svg" alt="Loading Icon">
-        </button>
-    </div>
+    <h1>The API</h1>
+    <p>Simple. Fast. Easy</p>
     
-    <div class="output-box hide-ui" id="url-output-box">
-        <span>Shortened URL: </span>
-        <div class="output" id="copy-div">
-            <span id="shortened-url">https://britto.tech/WRONG</span>
-            <div id="copy">
-                <img src="~/img/icons/material/copy_filled.svg" alt="Copy Icon">
-                <img class="no-display" src="~/img/icons/material/check_filled.svg" alt="Copy Icon">
-            </div>
-        </div>
+    <section class="doc-section">
+        <h2 class="section-title">Introduction</h2>
+        @*<code>
+            $ curl '@Context.Request.Scheme://@Context.Request.Host/api/v1/create?url=YOUR_URL_HERE'
+        </code>*@
+        <p class="doc-paragraph">Shorty has a very simple and easy to use api to help you easily automate shortening links. 
+            This service is intended to be used to create short-lived shareable links. The default expiry for a link if none provided during creation is 60 days.
+            After 60 days, the url might get assigned as the shortened link for another url, so please set the expiry value incase you might need more time 
+            or use another service that offers permanent links.</p>
+    </section>
+    
+    <section class="doc-section">
+        <h2 class="section-title">Usage</h2>
+        <p class="doc-paragraph">Send a GET request to the following url to get the shortened version of the provided url. Replace <strong>YOUR_URL_HERE</strong> with a valid url.
+            You might need to url encode it depending on what you use to send the request.</p>
+        <code class="doc-code">
+            @Context.Request.Scheme://@Context.Request.Host/api/v1/create?url=YOUR_URL_HERE
+        </code>
+        <p class="doc-paragraph">Here's the format of the api response with added line breaks for easy visualisation:</p>
+        <code class="doc-code">
+            { <br>
+            &nbsp;&nbsp;"shortUrl": "@Context.Request.Scheme://@Context.Request.Host/ABCDE", <br>
+            &nbsp;&nbsp;"originalUrl": "YOUR_URL_HERE", <br>
+            &nbsp;&nbsp;"expiresAt": 1725055989 <br>
+            } <br>
+        </code>
+        <p class="doc-paragraph">
+            Here the <strong>expiresAt</strong> integer is when the generated short url will cease to function represented in unix time milliseconds UTC.
+            <strong>originalUrl</strong> is the url you provided and <strong>shortUrl</strong> is the shortened url that you can use to redirect to the original url.
+        </p>
+        <p class="doc-paragraph">
+            If you don't care about any of that and just want the shortened url that you can use for a little while, add the <strong>minimal=y</strong> query parameter to the url link this:
+        </p>
+        <code class="doc-code">
+            @Context.Request.Scheme://@Context.Request.Host/api/v1/create?url=YOUR_URL_HERE&minimal=y
+        </code>
+        <p class="doc-paragraph">
+            This will return a plain text response with just the shortened url terminated by a newline.
+        </p>
+        <p class="doc-paragraph">
+            You can also pass in <strong>expiry</strong> as an optional parameter to modify how long the link should remain active.
+            The value should be in minutes between 10 and 525600 (1 year). Here's an example:
+        </p>
+        <code class="doc-code">
+            @Context.Request.Scheme://@Context.Request.Host/api/v1/create?url=YOUR_URL_HERE&expiry=60
+        </code>
+        <p class="doc-paragraph">
+            You can combine the minimal and expiry parameters if needed, although I would recommend always using the json response for better logging and tracking.
+        </p>
+        <p class="doc-paragraph">
+            There is also the resolve endpoint which takes in an id and returns the original url in plain text that the id represents. Here's the format:
+        </p>
+        <code class="doc-code">
+            @Context.Request.Scheme://@Context.Request.Host/api/v1/resolve?id=ABCDE
+        </code>
+        <p class="doc-paragraph">
+            Here the <strong>id</strong> is the shortened url identifier without the full url. So the id of <strong>@Context.Request.Scheme://@Context.Request.Host/ABCDE</strong> would be <strong>ABCDE</strong>.
+        </p>
+    </section>
 
-    </div>
-    
-    <p class="bottom-p">Shorty is a simple URL shortener that allows you to shorten long URLs into short, easy-to-share links.</p>
+    <section class="doc-section">
+        <h2 class="section-title">Availability</h2>
+        <p class="doc-paragraph">
+            The api is available at <strong>https://shorty.britto.tech/</strong> and is open for public use.
+            There are some rate limits and I might tweak them as needed, but it should not be a problem for normal use.
+            <br> 
+            <br> 
+            Please be considerate and don't abuse the service.
+            If you need a more reliable and permanent solution, consider hosting your own instance of Shorty. 
+            The source code and instructions on building/hosting is available on the <a target="_blank" href="https://github.com/JoseBritto/Shorty">GitHub Repo</a>.
+            <br>
+            <br>
+            Please also be advised that I cannot guarantee any uptime or reliability of the service. I will try my best to keep it running, but I can't make any promises.
+            This is just a hobby project for me and I don't have the resources to promise anything.
+        </p>
+    </section>
 </div>
 
 <style>
@@ -36,116 +92,39 @@
     .no-display{
         display: none;
     }
+    .doc-section{
+        width: 60%;
+        margin: 80px auto;
+    }
+    .doc-paragraph{
+        text-align: left;
+    }
+    .doc-code{
+        color: #BCC2FF;
+        font-size: 0.75em;
+        font-weight: 500;
+        padding: 15px;
+        background-color: #131318;
+        border-radius: 20px;
+        display: inline-block;
+        width: fit-content;
+        margin: 5px auto;
+        text-align: left;
+    }
     h1{
         color: #BCC2FF;
         font-size: 6em;
         margin-top: 80px;
     }
+    h2{
+        color: #BCC2FF;
+    }
     p, span{
         color: #BCC2FF;
         font-size: 0.75em;
         font-weight: 500;
-    }
-    .input-box{
-        margin-top: 20px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-    input{
-        width: 50%;
-        height: 40px;
-        border-radius: 20px 0 0 20px;
-        border: 4px solid #BCC2FF;
-        padding: 20px;
-        font-size: 1em;
-        background-color: #20202A;
-        color: #BCC2FF;
-    }
-    input:focus{
-        outline: none;
-    }
-    button{
-        height: 40px;
-        border-radius: 0 20px 20px 0;
-        border: 4px solid #BCC2FF;
-        padding: 20px;
-        font-size: 1em;
-        background-color: #BCC2FF;
-        color: black;
-        margin-left: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-    button img{
-        width: 20px;
-        height: 20px;
-    }
-/*    button:hover{
-        background-color: #20202A;
-        color: #BCC2FF;
-    }*/
-    
-    .bottom-p{
-        margin-top: 20px;
-        color: #BCC2FF;
-        font-size: 0.75em;
-        font-weight: 500;
-    }
-    
-    .output-box{
-        margin-top: 20px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    #copy{
-        color: #BCC2FF;
-        background-color: transparent;
-        padding: 0;
-        border: none;
-        margin-left: 5px;
-    }
-    #copy img{
-        width: 16px;
-        height: 16px;
-        filter: invert(82%) sepia(25%) saturate(4500%) hue-rotate(193deg) brightness(109%) contrast(103%);
-    }
-    
-    #shortened-url{
-        color: #BCC2FF;
-        font-size: 0.75em;
-        font-weight: 500;
-        text-decoration: none;
-    }
-    .output{
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        margin-left: 12px;
-        padding: 5px 10px;
-    }
-    .output:hover{
-        background-color: #131318;
-        border-radius: 20px;
-        cursor: pointer;
-    }
-    
-    .spin-img{
-        animation: spin 2s linear infinite;
-    }
-    
-    @@keyframes spin {
-        0% { transform: rotate(0deg); }
-        50% { transform: rotate(180deg); }
-        99% { transform: rotate(359deg); }
-        100% { transform: rotate(360deg); }
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
     
     
