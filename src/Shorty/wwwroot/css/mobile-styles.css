@@ -1,0 +1,142 @@
+@media only screen and (max-width: 768px) {
+
+    body{
+        display: flex;
+        flex-direction: column;
+
+    }
+    html, body{
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    .only-mobile{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+    }
+    .only-mobile .buttons {
+
+    }
+
+    .only-mobile .buttons button{
+        width: 80%;
+    }
+
+    header{
+        order: 2;
+        border-radius: 8px;
+        margin: 5px;
+        /*height: 40px;
+        max-height: 10vh;
+        min-height: 30px;*/
+        /* height: 5vh;*/
+        height: 5vh;
+        padding: 16px;
+        transition: 1s;
+        overflow: hidden;
+    }
+
+    .container-noboot {
+        order: 1;
+        margin: 5px;
+        height: 94vh;
+        width: auto;
+        overflow: auto;
+        padding: 1px;
+    }
+
+    .container-noboot-shrinker{
+        transition: 1s;
+
+        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .container-noboot-shrinker.shrink{
+        transition: 1s;
+        width: 70%;
+        height: 50vh;
+        overflow: hidden;
+        margin: auto;
+    }
+
+    .wip{
+        display: none;
+    }
+
+    .menu-btn {
+        display: flex;
+        flex-direction: column;
+        row-gap: 2px;
+        width: 24px;
+        cursor: pointer;
+        margin: 0 auto;/*
+            transform: translateY(60%);*/
+    }
+
+    .menu-btn div {
+        height: 0.2em;
+        width: 100%;
+        background-color: #BCC2FF;
+        border-radius: 10px;
+        transition: .2s;
+    }
+
+    .menu-btn.open div {
+        transition: .2s;
+    }
+    .menu-btn.open div:first-child {
+        background-color: rgb(202, 34, 0);
+        transform: rotate(40deg) translate(2px, 2.2px);
+    }
+
+    .menu-btn.open div:nth-child(2) {
+        opacity: 0;
+    }
+    .menu-btn.open div:last-child {
+        background-color: rgb(202, 34, 0);
+        transform: rotate(-40deg) translate(2px, -2.2px);
+    }
+
+    #mobile-nav {
+        position: absolute;
+        transform: translateY(40vh);
+        background-color: #20202A;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 10px;
+        width: calc(100vw - 10px);
+        margin-left: 5px;
+        margin-right: 5px;
+        border-radius: 20px;
+        padding-top: 20px;
+        padding-bottom: 50%;
+    }
+
+    .slide-in {
+        animation: slide-in-mobile 1s forwards;
+    }
+
+    .slide-out {
+        animation: slide-out-mobile 1s forwards;
+    }
+
+
+}
+
+@keyframes slide-in-mobile {
+     0% { transform: translateY(40vh); }
+     100% { transform: translateY(-8vh); }
+ }
+
+@keyframes slide-out-mobile {
+     0% { transform: translateY(-8vh); }
+     100% { transform: translateY(40vh); }
+ }
