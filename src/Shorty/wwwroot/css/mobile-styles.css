@@ -1,9 +1,14 @@
-@media only screen and (max-width: 768px) {
 
+@media only screen and (max-width: 768px) {
+    .only-mobile{
+        display: unset;
+    }
+    .only-desktop{
+        display: none;
+    }
     body{
         display: flex;
         flex-direction: column;
-
     }
     html, body{
         height: 100%;
