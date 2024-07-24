@@ -35,13 +35,11 @@ if (this.classList.contains('open')) {
     this.classList.remove('open');
     document.getElementById('mobile-nav').classList.remove('slide-in');
     document.getElementById('mobile-nav').classList.add('slide-out');
-    /*document.getElementById('header').classList.add('expand');*/
     document.getElementById('container-noboot-shrinker').classList.remove('shrink');
 } else {
 this.classList.add('open');
 document.getElementById('mobile-nav').classList.add('slide-in');
 document.getElementById('mobile-nav').classList.remove('slide-out');
-/*document.getElementById('header').classList.remove('expand');*/
 document.getElementById('container-noboot-shrinker').classList.add('shrink');
 }">
             <div></div>
@@ -65,7 +63,7 @@ document.getElementById('container-noboot-shrinker').classList.add('shrink');
     </div>
 </section>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
 @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
