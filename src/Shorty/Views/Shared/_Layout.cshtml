@@ -19,8 +19,8 @@
 <header id="header">
     <nav class="only-desktop">
         <ul class="center">
-            <li class="@((ViewData.ContainsKey("Tab") == false || ViewData["Tab"] == null || (ViewData["Tab"] as int?) == 0)? "selected" : "")" ><img src="~/img/icons/material/home_filled.svg" alt="home icon"><a href="/">Home</a></li>
-            <li class="@((ViewData["Tab"] as int?)== 1 ? "selected": "")" ><img src="~/img/icons/material/code_filled.svg" alt="code icon"><a asp-action="Docs" asp-controller="V1" asp-area="Api">Api</a></li>
+            <li class="@((ViewData.ContainsKey("Tab") == false || ViewData["Tab"] == null || (ViewData["Tab"] as int?) == 0)? "selected" : "")" ><a href="/"><img src="~/img/icons/material/home_filled.svg" alt="home icon">Home</a></li>
+            <li class="@((ViewData["Tab"] as int?)== 1 ? "selected": "")" ><a asp-action="Docs" asp-controller="V1" asp-area="Api"><img src="~/img/icons/material/code_filled.svg" alt="code icon">Api</a></li>
         </ul>
     </nav>
     
