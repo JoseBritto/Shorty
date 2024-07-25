@@ -1,5 +1,7 @@
-
 # <img src="https://raw.githubusercontent.com/JoseBritto/Shorty/master/src/Shorty/wwwroot/favicon.svg" width=24/> Shorty
+
+> [!WARNING]  
+> This project is still **under active development**
 
 A simple url shortner with an easy to use api built with ASP.Net.  
 Click [here](https://shorty.britto.tech) to access the public instance
