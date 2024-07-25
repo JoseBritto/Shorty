@@ -28,17 +28,19 @@
         position: absolute;
         transform: translateY(40vh);
         background-color: var(--panel-background);
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        column-gap: 5vw;
         width: calc(100vw - 10px);
         margin-left: 5px;
         margin-right: 5px;
         border-radius: 20px;
         padding-top: 20px;
         padding-bottom: 50%;
+    }
+    #mobile-nav .buttons{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        column-gap: 5vw;
     }
     
     #mobile-nav button{
