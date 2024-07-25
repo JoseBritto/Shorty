@@ -30,18 +30,7 @@
             <button class="btn btn-primary" onclick="window.location.href = '/api/v1/docs';">Api</button>
         </div>
         
-        <div id="menu-btn" class="menu-btn" onclick="
-if (this.classList.contains('open')) {
-    this.classList.remove('open');
-    document.getElementById('mobile-nav').classList.remove('slide-in');
-    document.getElementById('mobile-nav').classList.add('slide-out');
-    document.getElementById('container-noboot-shrinker').classList.remove('shrink');
-} else {
-this.classList.add('open');
-document.getElementById('mobile-nav').classList.add('slide-in');
-document.getElementById('mobile-nav').classList.remove('slide-out');
-document.getElementById('container-noboot-shrinker').classList.add('shrink');
-}">
+        <div id="menu-btn" class="menu-btn" onclick="toggle_shrink()">
             @*3 Bars for the menu button*@
             <div></div>
             <div></div>
