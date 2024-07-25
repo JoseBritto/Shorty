@@ -1,7 +1,8 @@
-This is still a WIP.
 
-A live demo is hosted at [https://shorty.britto.tech/](https://shorty.britto.tech) *(might be outdated sometimes. CD not yet setup)*
+# <img src="https://raw.githubusercontent.com/JoseBritto/Shorty/master/src/Shorty/wwwroot/favicon.svg" width=24/> Shorty
 
+A simple url shortner with an easy to use api built with ASP.Net.  
+Click [here](https://shorty.britto.tech) to access the public instance
 
 ### Build Instructions
 
@@ -14,4 +15,7 @@ Run the following commands in src/Shorty to build Shorty from source:
 ```
 Replace output-dir with the target output directory name.
 
-I have only tested on arch linux. There's no platform specific features utilised so it should work fine on all donet supported platforms.
+### Acknowledgements
+
+The shorty favicon <img src="https://raw.githubusercontent.com/JoseBritto/Shorty/master/src/Shorty/wwwroot/favicon.svg" width=12/> is by [Darshan Krishna](https://www.linkedin.com/in/darshan-krishna-manoj-50600625a/).  
+The site uses icons by [Css.gg](https://github.com/astrit/css.gg?ref=svgrepo.com) licensed under the MIT License.
