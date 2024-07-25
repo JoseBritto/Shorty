@@ -26,8 +26,14 @@
     
     <div id="mobile-drawer" class="only-mobile">
         <div class="buttons slide-out" id="mobile-nav">
-            <button class="btn btn-primary" onclick="window.location.href = '/';">Home</button>
-            <button class="btn btn-primary" onclick="window.location.href = '/api/v1/docs';">Api</button>
+            <button 
+                class="@((ViewData.ContainsKey("Tab") == false || ViewData["Tab"] == null || (ViewData["Tab"] as int?) == 0)? "selected" : "")" 
+                onclick="window.location.href = '/'"
+                ><img src="~/img/icons/material/home_filled.svg" alt="home icon"></button>
+            <button 
+                class="@((ViewData["Tab"] as int?)== 1 ? "selected": "")" 
+                onclick="window.location.href = '/Api/V1/Docs'"
+                ><img src="~/img/icons/material/code_filled.svg" alt="code icon"></button>
         </div>
         
         <div id="menu-btn" class="menu-btn" onclick="toggle_shrink()">
