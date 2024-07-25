@@ -2,7 +2,7 @@
     ViewData["Title"] = "Shorty";
 }
 
-<div class="text-center only-desktop">
+<div class="text-center">
     <h1>Shorty</h1>
     <p>Simple. Clean. Short.</p>
     <div class="input-box">
@@ -148,6 +148,35 @@
     }
     
     
+</style>
+
+@*Mobile styles*@
+<style>
+    @@media only screen and (max-width: 768px){
+        h1 {
+            font-size: 3em;
+        }
+        p, span{
+            font-size: 0.75em;
+        }
+        
+        .input-box{
+            margin-top: 18%;
+        }
+        
+        input{
+            width: 70%;
+            border: 2px solid var(--primary);
+        }
+        
+        button{
+            border: 2px solid var(--primary);
+        }
+        .bottom-p{
+            margin: 16% auto;
+            width: 80%;
+        }
+    }
 </style>
 
 <script>

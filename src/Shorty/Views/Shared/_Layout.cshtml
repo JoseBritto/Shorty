@@ -24,13 +24,13 @@
         </ul>
     </nav>
     
-    <div class="only-mobile">
+    <div id="mobile-drawer" class="only-mobile">
         <div class="buttons slide-out" id="mobile-nav">
             <button class="btn btn-primary" onclick="window.location.href = '/';">Home</button>
             <button class="btn btn-primary" onclick="window.location.href = '/api/v1/docs';">Api</button>
         </div>
         
-        <div class="menu-btn" onclick="
+        <div id="menu-btn" class="menu-btn" onclick="
 if (this.classList.contains('open')) {
     this.classList.remove('open');
     document.getElementById('mobile-nav').classList.remove('slide-in');
