@@ -29,6 +29,10 @@ body {
   }
 }
 
+a, a:visited, a:hover, a:focus{
+  color: var(--primary);
+}
+
 /* ******************************************** */
 
 .hide-ui{
@@ -127,6 +131,29 @@ nav ul.center li.selected img {
   border-radius: 20px;
   min-height: 60vh;
   overflow: auto;
+}
+
+footer{
+  border-radius: 20px;
+  margin: 2% 8% 0 8%;
+  height: 80px;
+  padding: 0 2%;
+  background-color: var(--site-background);
+}
+
+footer .content{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+footer .content img{
+  height: 1.2rem;
+  margin: 0;
+  filter: invert(77%) sepia(25%) saturate(2132%) hue-rotate(193deg) brightness(107%) contrast(104%);
 }
 
 /*
