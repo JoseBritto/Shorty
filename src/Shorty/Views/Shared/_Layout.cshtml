@@ -10,146 +10,64 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="~/css/colors.css"/>
     <link rel="stylesheet" href="~/css/font-classes.css"/>
+    <link rel="stylesheet" href="~/css/mobile-styles.css"/>
     <link rel="icon" href="favicon.svg" sizes="any" type="image/svg+xml">
 </head>
-<body style="background-color: #131318; margin: 0;" class="poppins-regular">
-<header>
-    <nav>
+<body class="poppins-regular">
+<header id="header">
+    <nav class="only-desktop">
         <ul class="center">
             <li class="@((ViewData.ContainsKey("Tab") == false || ViewData["Tab"] == null || (ViewData["Tab"] as int?) == 0)? "selected" : "")" ><img src="~/img/icons/material/home_filled.svg" alt="home icon"><a href="/">Home</a></li>
             <li class="@((ViewData["Tab"] as int?)== 1 ? "selected": "")" ><img src="~/img/icons/material/code_filled.svg" alt="code icon"><a asp-action="Docs" asp-controller="V1" asp-area="Api">Api</a></li>
         </ul>
     </nav>
+    
+    <div id="mobile-drawer" class="only-mobile">
+        <div class="slide-out" id="mobile-nav">
+            <div class="buttons">
+                <button
+                    class="@((ViewData.ContainsKey("Tab") == false || ViewData["Tab"] == null || (ViewData["Tab"] as int?) == 0) ? "selected" : "")"
+                    onclick="window.location.href = '/'"><img src="~/img/icons/material/home_filled.svg" alt="home icon"></button>
+                <button
+                    class="@((ViewData["Tab"] as int?) == 1 ? "selected" : "")"
+                    onclick="window.location.href = '/Api/V1/Docs'"><img src="~/img/icons/material/code_filled.svg" alt="code icon"></button>    
+            </div>
+        </div>
+        
+        <div id="menu-btn" class="menu-btn" onclick="toggle_shrink()">
+            @*3 Bars for the menu button*@
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
 </header>
-<div class="container-noboot">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
+<div class="container-noboot" id="main-container">
+    <div class="container-noboot-shrinker" id="container-noboot-shrinker">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/SebastianAigner/twemoji-amazing/twemoji-amazing.css">
+<footer class="only-desktop">
+    <div class="content">
+        @*The following vector is by https://github.com/astrit/css.gg in MIT License via https://www.svgrepo.com *@
+        <p>A hobby project by <a href="https://britto.tech/">Britto</a>. </p>
+        <p>Fork on <a href="https://github.com/JoseBritto/Shorty/">Github</a> <img src="~/img/icons/svgrepo/git-fork.svg" alt=""></p>
+    </div>
+</footer>
+
+@*<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/SebastianAigner/twemoji-amazing/twemoji-amazing.css">
 <section class="wip" style="position: absolute; bottom: 2px; width: 100%">
     <div class="content">
         <p> <i class="twa twa-warning"></i>Very Early Beta Version. Expect <i class="twa twa-bug"></i> <i class="twa twa-bug"></i></p>
     </div>
-</section>
-<style>
-    .wip{
-        height: 40px;
-        font-size: larger;
-        background: rgba(39, 34, 60, 0.49);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-    }    
-</style>
+</section>*@
 
-<style>
-    .hide-ui{
-        visibility: hidden
-    }
-    header{
-        background-color: #20202A;
-        color: black;
-        border-radius: 20px;
-        margin: 2% 8% 0 8%;
-        height: 80px;
-        /*box-shadow: 3px 5px 10px #212121;*/
-    }
-    
-    nav {
-        width: 100%;
-        height: 100%;
-    }
-    
-    nav ul.center{
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 0;
-        margin-bottom: 0;
-        height: 100%;
-        list-style-type: none;
-        padding: 20px;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        background-color: transparent;
-    }
-    
-    nav ul.center li {
-        margin: 0 10px;
-        padding: 5px;
-        background-color: transparent;
-        color: #BCC2FF;
-        overflow: hidden;
-        border-radius: 20px;
-        box-shadow: 3px 5px 10px #212121;
-        width: 100px;
-        text-align: center;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    
-    nav ul.center li a {
-        text-decoration: none;
-        color: #BCC2FF;
-        text-align: center;
-        padding: 15px;
-        margin: -15px;
-    }
-
-    nav ul.center li img {
-        width: 20px;
-        height: 20px;
-        margin-right: 5px;
-        filter: invert(82%) sepia(25%) saturate(4500%) hue-rotate(193deg) brightness(109%) contrast(103%);
-    }
-    nav ul.center li.selected {
-        background-color: #BCC2FF;
-        color: #252B61;
-    }
-    
-    nav ul.center li.selected a {
-        color: #252B61;
-    }  
-    
-    nav ul.center li.selected img {
-        filter: invert(17%) sepia(10%) saturate(6088%) hue-rotate(204deg) brightness(92%) contrast(96%);
-    }
-    
-    
-    .container-noboot {
-        margin: 20px 8%;
-        background-color: #20202A;
-        border-radius: 20px;
-        min-height: 60vh;
-        overflow: auto;
-    }
-    
-    @@media only screen and (max-width: 768px) {
-        .container-noboot {
-            margin: 20px 0;
-            border-radius: 12px;
-            min-height: 75vh;
-        }
-        header{
-            margin: 2% 0 0 0;
-            border-radius: 12px;
-        }
-        body, html{
-            padding: 0;
-        }
-    }
-    
-</style>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
 @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
