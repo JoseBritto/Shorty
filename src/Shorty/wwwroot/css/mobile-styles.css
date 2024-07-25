@@ -87,7 +87,7 @@
     }
 
     .container-noboot-shrinker{
-        transition: 1s;
+        transition: 0.3s;
 
         border-radius: 8px;
         width: 100%;
@@ -96,7 +96,7 @@
     }
 
     .container-noboot-shrinker.shrink{
-        transition: 1s;
+        transition: 0.3s;
         width: 70%;
         height: 50vh;
         overflow: hidden;
@@ -142,11 +142,11 @@
     }
 
     .slide-in {
-        animation: slide-in-mobile 1s forwards;
+        animation: slide-in-mobile 0.5s forwards;
     }
 
     .slide-out {
-        animation: slide-out-mobile 1s forwards;
+        animation: slide-out-mobile 0.5s forwards;
     }
 
 
