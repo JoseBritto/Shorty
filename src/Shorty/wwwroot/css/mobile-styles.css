@@ -83,14 +83,14 @@
     .menu-btn div {
         height: 0.2em;
         width: 100%;
-        background-color: #BCC2FF;
+        background-color: var(--primary);
         border-radius: 10px;
         transition: transform .2s, opacity .4s;
     }
 
     .menu-btn.open div {
         opacity: 0;
-        background-color: #d02301;
+        background-color: var(--danger);
     }
     
     .menu-btn.open div:first-child {
@@ -106,7 +106,7 @@
     #mobile-nav {
         position: absolute;
         transform: translateY(40vh);
-        background-color: #20202A;
+        background-color: var(--panel-background);
         display: flex;
         flex-direction: column;
         align-items: center;
