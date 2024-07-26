@@ -20,5 +20,5 @@ jobs:
       with:
         name: shorty-latest
         path: src/Shorty/output
-        if-no-files-found: fail
+        if-no-files-found: error
         overwrite: true
