@@ -2,7 +2,7 @@ run-name: Build and upload CD artifacts
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
