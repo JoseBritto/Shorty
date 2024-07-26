@@ -8,14 +8,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: build shorty
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Build Shorty
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - run: cd src/Shorty && dotnet publish -r linux-arm64 /p:PublishSingleFile=true /p:SelfContained=true -o output
     - name: upload output
-    - uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
         name: shorty-latest
         path: src/Shorty/output
