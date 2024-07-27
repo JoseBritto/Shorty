@@ -2,6 +2,7 @@ using Shorty.Constants;
 
 namespace Shorty.Helpers;
 
+[Obsolete("Use ConfigManager instead")]
 public static class ConfigHelper
 {
     /// <summary>
