@@ -9,6 +9,8 @@ using Shorty.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configTask = ConfigManager.LoadConfigFromDiskAsync();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -64,8 +66,17 @@ app.MapControllerRoute(
 
 app.UseRateLimiter();
 
+/*
 ConfigHelper.EnsureUrlSettingsConfigValidity(app.Configuration);
+*/
 
 app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
+
+var config = await configTask;
+if(config == null)
+{
+    Console.Error.WriteLine("Critical Error: Failed to read/parse config file!");
+    Environment.Exit(Constants.ExitCodes.CONFIG_ERROR);
+}
 
 app.Run();
