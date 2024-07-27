@@ -19,7 +19,7 @@ jobs:
     - name: upload output
       uses: actions/upload-artifact@v4
       with:
-        name: shorty-latest
+        name: shorty-latest-arm64-standalone
         path: src/Shorty/output
         if-no-files-found: error
         overwrite: true
