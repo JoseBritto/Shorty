@@ -7,7 +7,7 @@ public class ConfigManager
     const string CONFIG_PATH = "./config.json";
     private readonly ShortyConfig _config;
         
-    public ConfigManager(ShortyConfig config, string configPath)
+    public ConfigManager(ShortyConfig config)
     {
         _config = config;
     }

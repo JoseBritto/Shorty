@@ -10,6 +10,22 @@ using Shorty.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
 var configTask = ConfigManager.LoadConfigFromDiskAsync();
+var config = await configTask;
+if(config == null)
+{
+    Console.Error.WriteLine("Critical Error: Failed to read/parse config file!");
+    Environment.Exit(Constants.ExitCodes.CONFIG_ERROR);
+}
+
+if (!ConfigValidator.ValidateAll(config))
+{
+    Console.Error.WriteLine("Critical Error: Config validation failed. Reverting to defaults for this session!");
+    config = new ShortyConfig();
+}
+
+var configMan = new ConfigManager(config);
+
+builder.Services.AddSingleton(configMan);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -71,12 +87,5 @@ ConfigHelper.EnsureUrlSettingsConfigValidity(app.Configuration);
 */
 
 app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
-
-var config = await configTask;
-if(config == null)
-{
-    Console.Error.WriteLine("Critical Error: Failed to read/parse config file!");
-    Environment.Exit(Constants.ExitCodes.CONFIG_ERROR);
-}
 
 app.Run();
