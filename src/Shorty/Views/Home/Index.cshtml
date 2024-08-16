@@ -22,7 +22,10 @@
                 <img class="no-display" src="~/img/icons/material/check_filled.svg" alt="Copy Icon">
             </div>
         </div>
+    </div>
 
+    <div id="error-box" class="hide-ui">
+        <span>Error message goes here</span>
     </div>
     
     <p class="bottom-p">Shorty is a simple URL shortener that allows you to shorten long URLs into short, easy-to-share links.</p>
@@ -136,6 +139,27 @@
         cursor: pointer;
     }
     
+    #error-box{
+        margin-top: 0;
+        padding: 0;
+        font-size: 1.25em;
+        font-weight: 500;
+        width: 100%;
+    }
+    
+    #error-box span{
+        color: var(--danger); 
+        display: block;
+        height: 2em;
+        text-align: center;
+        width: 80%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin: 0 auto;
+        padding: 0;
+    }
+    
     .spin-img{
         animation: spin 2s linear infinite;
     }
@@ -208,11 +232,27 @@
                 "Content-Type": "application/json"
             }
         }).then(response => {
+            // Stop the loading animation
+            document.getElementById("shorten").children[0].classList.remove("no-display");
+            document.getElementById("shorten").children[1].classList.add("no-display");
+            done = true;
             if (response.status !== 200){
                 console.log("Error: " + response.status);
+                if (response.body !== null){
+                    response.body.getReader().read().then(function(result){
+                        if (result.value === undefined || result.value === null){
+                            return;
+                        }
+                        let decoder = new TextDecoder();
+                        document.getElementById("error-box").children[0].innerHTML = decoder.decode(result.value);
+                        document.getElementById("error-box").classList.remove("hide-ui");
+                    });
+                }
+                
+                document.getElementById("error-box").children[0].innerHTML = "An error occurred. Please try again.";
+                document.getElementById("error-box").classList.remove("hide-ui");
                 return;
             }
-            done = true;
             return response.json();
         }).then(response => {
             if (response === undefined){
@@ -222,14 +262,14 @@
             shortenedUrlElement.innerHTML = response.shortUrl;
             let outputBox = document.getElementById("url-output-box");
             outputBox.classList.remove("hide-ui");
-            document.getElementById("shorten").children[0].classList.remove("no-display");
-            document.getElementById("shorten").children[1].classList.add("no-display");
         });
     }
     
     function resetAll(){
         let outputBox = document.getElementById("url-output-box");
         outputBox.classList.add("hide-ui");
+        let errorBox = document.getElementById("error-box");
+        errorBox.classList.add("hide-ui");
         done = false;
     }
     
