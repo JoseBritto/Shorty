@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +19,13 @@ public class V1Controller : Controller
     
     private readonly AppDbContext _db;
     private readonly ILogger<V1Controller> _logger;
-    private readonly IConfiguration _config;
+    private readonly ConfigManager _configMan;
 
-    public V1Controller(AppDbContext db, ILogger<V1Controller> logger, IConfiguration config)
+    public V1Controller(AppDbContext db, ILogger<V1Controller> logger, ConfigManager configMan)
     {
         _db = db;
         _logger = logger;
-        _config = config;
+        _configMan = configMan;
 
         if(_db.Database.IsRelational())
             _db.Database.Migrate();
@@ -43,37 +44,68 @@ public class V1Controller : Controller
         {
             return BadRequest("Invalid URL: " + url);
         }
-        if (uri.Host == "localhost")
+        if (uri.Host == "localhost" || (uri.Scheme != "http" && uri.Scheme != "https"))
             return BadRequest("Invalid URL: " + url);
         
-        expiry ??= (long)TimeSpan.FromDays(60).TotalMinutes;
+        expiry ??= _configMan.Config.DefaultExpirationMinutes;
         
-        if (expiry > TimeSpan.FromDays(365).TotalMinutes)
-            return BadRequest("Expiry cannot be more than 365 days");
+        if (expiry > _configMan.Config.MaxExpirationMinutes)
+            return BadRequest($"Expiry cannot be more than {_configMan.Config.MaxExpirationMinutes} minutes");
         
-        if (expiry < 10)
-            return BadRequest("Expiry cannot be less than 10 minutes");
+        if (expiry < _configMan.Config.MinExpirationMinutes)
+            return BadRequest($"Expiry cannot be less than {_configMan.Config.MinExpirationMinutes} minutes");
         
-        var randNum = Random.Shared.Next(10, 64*64*64*64*64);
-        _logger.LogInformation(Convert.ToBase64String(BitConverter.GetBytes(randNum)));
-
+        // One character in base64 is 6 bits.
+        // 1 byte = 8 bits
+        var randomBytes = new byte[(int)Math.Ceiling(_configMan.Config.ShortUrlLength * 6.0 / 8.0)];
+        _logger.LogDebug("Generating {n} random bytes for short URL of length {l}", randomBytes.Length, _configMan.Config.ShortUrlLength);
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetNonZeroBytes(randomBytes);
+        _logger.LogInformation("Generated random bytes for short URL: {randomB64}", Convert.ToBase64String(randomBytes));
         
         string shortUrlId;
-        do
+        int tries = 15;
+        while (true)
         {
-            shortUrlId = Convert.ToBase64String(BitConverter.GetBytes(randNum)).Substring(0, 5);
+            shortUrlId = Convert.ToBase64String(randomBytes).Substring(0, _configMan.Config.ShortUrlLength);
             shortUrlId = shortUrlId.Replace("/", "-").Replace("+", "_");
-            // Check and remove if anu padding. Probably won't occur after the substring
-            shortUrlId = shortUrlId.Replace("=", "");
-        } while (await _db.ShortUrls.AnyAsync(s => s.Id == shortUrlId)); // If any has the same id. Loop again
-        
-        // This loop will go infinite if get closer to the max a 5 character b64 can hold in the db. But I don't think we'll reach that point anytime soon.
-        //TODO: After Version 1 release: Break the loop in that case and error out.
+            // Check and warn about padding characters
+            if (shortUrlId.Contains('='))
+            {
+                _logger.LogWarning("Padding characters detected in the first {urlLength} characters in generated short URL. Regenerating...", _configMan.Config.ShortUrlLength);
+                rng.GetNonZeroBytes(randomBytes);
+                if(tries > 0)
+                {
+                    tries--;
+                    continue;
+                }
+            }
+
+            if (await _db.ShortUrls.AnyAsync(s => s.Id == shortUrlId))
+            {
+                if(tries > 0)
+                {
+                    _logger.LogWarning("Short URL {shortUrlId} already exists. Regenerating...", shortUrlId);
+                    rng.GetNonZeroBytes(randomBytes);
+                    tries--;
+                }
+            }
+            else
+            {
+                _logger.LogInformation("Generated unique short URL: {shortUrlId}", shortUrlId);
+                break;
+            }
+
+            if (tries > 0) 
+                continue;
+            _logger.LogError("Failed to generate a unique short URL after 15 tries. Aborting...");
+            return StatusCode(500, "Failed to generate a short URL. Please ask the admin to check the logs.");
+        }
         
         var createdAt = DateTime.UtcNow;
-        var expiresAt = createdAt + CalculateExpiry(expiry);
+        var expiresAt = createdAt + TimeSpan.FromMinutes((double)expiry);
         
-        _logger.LogInformation("Short URL created: {ShortUrlId}\nExpires At: {expiresAt}", shortUrlId, expiresAt);
+        _logger.LogInformation("Short URL created: {ShortUrlId}\nExpires At: {expiresAt} UTC", shortUrlId, expiresAt);
         
         var shortUrl = new ShortUrl
         {
@@ -105,71 +137,6 @@ public class V1Controller : Controller
             expiresAt = new DateTimeOffset(expiresAt, TimeSpan.Zero).ToUnixTimeSeconds()
         };
     }
-
-    private TimeSpan CalculateExpiry(long? expiry)
-    {
-        var defaultExpiry = TimeSpan.FromDays(10);
-        if (_config[ConfigVar.SHORT_URL_DEFAULT_EXPIRY_MINUTES] != null)
-        {
-            if (long.TryParse(_config[ConfigVar.SHORT_URL_DEFAULT_EXPIRY_MINUTES], out var val) && val > 0)
-                defaultExpiry = TimeSpan.FromMinutes(val);
-            _logger.LogWarning("Invalid value for {configVar}. Using default value of {value}.", 
-                ConfigVar.SHORT_URL_DEFAULT_EXPIRY_MINUTES, defaultExpiry.TotalMinutes);
-        }
-
-        if (_config[ConfigVar.SHORT_URL_ALLOW_CUSTOM_EXPIRY] == null) 
-            return defaultExpiry;
-        
-        if (bool.TryParse(_config[ConfigVar.SHORT_URL_ALLOW_CUSTOM_EXPIRY], out var allow))
-        {
-            if (!allow)
-            {
-                if (expiry.HasValue)
-                    _logger.LogInformation("Custom expiry is disabled. Ignoring the expiry value.");
-                return defaultExpiry;
-            }
-            if (_config[ConfigVar.MAX_EXPIRY_MINUTES] != null)
-            {
-                if (long.TryParse(_config[ConfigVar.MAX_EXPIRY_MINUTES], out var maxExpiry) && maxExpiry > 0)
-                {
-                    if (expiry > maxExpiry)
-                    {
-                        _logger.LogWarning("Expiry value is more than the maximum allowed. Setting to maximum.");
-                        return TimeSpan.FromMinutes(maxExpiry);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Invalid value for {configVar}. Assuming no limit.",
-                        ConfigVar.MAX_EXPIRY_MINUTES);
-                }
-            }
-            if (_config[ConfigVar.MIN_EXPIRY_MINUTES] != null)
-            {
-                if (long.TryParse(_config[ConfigVar.MIN_EXPIRY_MINUTES], out var minExpiry) && minExpiry > 0)
-                {
-                    if (expiry < minExpiry)
-                    {
-                        _logger.LogWarning("Expiry value is less than the minimum allowed. Setting to minimum.");
-                        return TimeSpan.FromMinutes(minExpiry);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Invalid value for {configVar}. Assuming no limit.",
-                        ConfigVar.MIN_EXPIRY_MINUTES);
-                }
-
-            }
-            return expiry.HasValue ? TimeSpan.FromMinutes(expiry.Value) : defaultExpiry;
-        }
-
-        _logger.LogWarning("Invalid value for {configVar}. Assuming false.",
-            ConfigVar.SHORT_URL_ALLOW_CUSTOM_EXPIRY);
-        
-        return defaultExpiry;
-    }
-
 
     [HttpGet]
     public async Task<object> Resolve(string id)
@@ -203,8 +170,8 @@ public class V1Controller : Controller
     {
         if(string.IsNullOrWhiteSpace(shortUrlId))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(shortUrlId));
-        var prefix = _config.GetShortUrlPrefix(Request.Scheme);
-        return prefix != null ? $"{prefix}{shortUrlId}" : $"{Request.Scheme}://{Request.Host}/{shortUrlId}";
+        var prefix = _configMan.Config.GetShortUrlPrefixWithTrailingSlash() ?? $"{Request.Scheme}://{Request.Host}/";
+        return $"{prefix}{shortUrlId}";
     }
 
 }

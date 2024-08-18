@@ -5,16 +5,16 @@ namespace Shorty.Helpers;
 public class ConfigManager
 {
     const string CONFIG_PATH = "./config.json";
-    private readonly ShortyConfig _config;
+    public readonly ShortyConfig Config;
         
     public ConfigManager(ShortyConfig config)
     {
-        _config = config;
+        Config = config;
     }
     
     public async Task SaveConfigAsync()
     {
-        var json = JsonSerializer.Serialize(_config, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(CONFIG_PATH, json);
     }
     
@@ -22,12 +22,11 @@ public class ConfigManager
     {
         if (!File.Exists(CONFIG_PATH))
         {
-            return new ShortyConfig();
+            var config = new ShortyConfig();
+            await new ConfigManager(config).SaveConfigAsync();
         }
         try
         {
-            if (!File.Exists(CONFIG_PATH))
-                return new ShortyConfig();
             var json = await File.ReadAllTextAsync(CONFIG_PATH);
             var config = JsonSerializer.Deserialize<ShortyConfig>(json);
             if (config == null)

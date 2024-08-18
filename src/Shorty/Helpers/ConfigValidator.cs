@@ -4,7 +4,9 @@ public static class ConfigValidator
 {
     public static bool ValidateAll(ShortyConfig config)
     {
-        return IsValidUrlPrefix(config.ShortUrlPrefix);
+        if (config.ShortUrlPrefix != null)
+            return IsValidUrlPrefix(config.ShortUrlPrefix);
+        return true;
     }
 
     public static bool IsValidUrlPrefix(string newPrefix)
