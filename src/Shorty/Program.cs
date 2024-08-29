@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Data;
 using Shorty.Helpers;
+using Shorty.Services;
 
 [assembly: InternalsVisibleTo("Shorty.Tests")]
 
@@ -34,6 +35,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlite("Data Source=shorty.db");
 });
+
+builder.Services.AddSingleton<CleanupService>();
 
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter(policyName: "restricted", options =>
@@ -87,5 +90,8 @@ ConfigHelper.EnsureUrlSettingsConfigValidity(app.Configuration);
 */
 
 app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
+
+var cleanupService = app.Services.GetRequiredService<CleanupService>();
+cleanupService.StartMonitoring(TimeSpan.FromHours(configMan.Config.DatabaseCleanupScheduleHours));
 
 app.Run();

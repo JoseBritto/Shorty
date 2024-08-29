@@ -7,6 +7,7 @@ public class ShortyConfig
     public long DefaultExpirationMinutes { get; set; }
     public long MaxExpirationMinutes { get; set; }
     public long MinExpirationMinutes { get; set; }
+    public int DatabaseCleanupScheduleHours { get; set; }
     
     public ShortyConfig()
     {
@@ -14,6 +15,7 @@ public class ShortyConfig
         DefaultExpirationMinutes = 90 * 24 * 60; // 90 days
         MinExpirationMinutes = 10;
         MaxExpirationMinutes = 365 * 24 * 60;
+        DatabaseCleanupScheduleHours = 24;
     }
 
     public bool TrySetShortUrlPrefix(string newPrefix)
