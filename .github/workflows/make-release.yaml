@@ -1,0 +1,33 @@
+run-name: Create a release for windows and linux
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    - name: Build Shorty for linux-arm64
+      run: cd src/Shorty && dotnet publish -r linux-arm64 /p:PublishSingleFile=true /p:SelfContained=true -o output-arm64
+    - name: Build Shorty for linux-x64
+      run: cd src/Shorty && dotnet publish -r linux-x64 /p:PublishSingleFile=true /p:SelfContained=true -o output-x64
+    - name: Build Shorty for win-x64
+      run: cd src/Shorty && dotnet publish -r win-x64 /p:PublishSingleFile=true /p:SelfContained=true -o output-win-x64
+    - name: Create a Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: Automated Release - ${{ github.ref }}
+        prerelease: true
+        tag_name: ${{ github.ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: |
+          src/Shorty/output-win-x64
+          src/Shorty/output-x64
+          src/Shorty/output-arm64

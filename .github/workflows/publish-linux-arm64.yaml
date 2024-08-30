@@ -14,12 +14,31 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-    - name: Build Shorty
-      run: cd src/Shorty && dotnet publish -r linux-arm64 /p:PublishSingleFile=true /p:SelfContained=true -o output
-    - name: upload output
+    - name: Build Shorty for linux-arm64
+      run: cd src/Shorty && dotnet publish -r linux-arm64 /p:PublishSingleFile=true /p:SelfContained=true -o output-arm64
+    - name: Upload output-arm64 for linux-arm64
       uses: actions/upload-artifact@v4
       with:
         name: shorty-latest-arm64-standalone
-        path: src/Shorty/output
+        path: src/Shorty/output-arm64
         if-no-files-found: error
         overwrite: true
+    - name: Build Shorty for linux-x64
+      run: cd src/Shorty && dotnet publish -r linux-x64 /p:PublishSingleFile=true /p:SelfContained=true -o output-x64
+    - name: Upload output for linux-x64
+      uses: actions/upload-artifact@v4
+      with:
+        name: shorty-latest-x64-standalone
+        path: src/Shorty/output-x64
+        if-no-files-found: error
+        overwrite: true
+    - name: Build Shorty for win-x64
+      run: cd src/Shorty && dotnet publish -r win-x64 /p:PublishSingleFile=true /p:SelfContained=true -o output-win-x64
+    - name: Upload output for win-x64
+      uses: actions/upload-artifact@v4
+      with:
+        name: shorty-latest-win-x64-standalone
+        path: src/Shorty/output-win-x64
+        if-no-files-found: error
+        overwrite: true
+    
