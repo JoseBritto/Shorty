@@ -142,12 +142,13 @@ public class V1Controller : Controller
     public async Task<object> Resolve(string id)
     {
         var obj = await _db.ShortUrls.FindAsync(id);
-
         if (obj == null)
         {
             return BadRequest("Invalid Id");
         }
-
+        await TrackClickAndExpiry(obj);
+        if (obj.IsDeleted)
+            return BadRequest("Link does not exist anymore");
         return obj.OriginalUrl + "\n";
     }
 
@@ -162,7 +163,14 @@ public class V1Controller : Controller
     {
         var shortUrl = await _db.ShortUrls.FindAsync(shortUrlId);
         if (shortUrl == null)
+        {
             return NotFound();
+        }
+        await TrackClickAndExpiry(shortUrl);
+        if (shortUrl.IsDeleted)
+        {
+            return NotFound();
+        }
         return RedirectPreserveMethod(shortUrl.OriginalUrl);
     }
     
@@ -172,6 +180,23 @@ public class V1Controller : Controller
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(shortUrlId));
         var prefix = _configMan.Config.GetShortUrlPrefixWithTrailingSlash() ?? $"{Request.Scheme}://{Request.Host}/";
         return $"{prefix}{shortUrlId}";
+    }
+
+    private async Task TrackClickAndExpiry(ShortUrl shortUrl)
+    {
+        if(shortUrl.IsDeleted)
+            return;
+        
+        if (shortUrl.ExpiresAtUtc < DateTime.UtcNow)
+        {
+            shortUrl.IsDeleted = true;
+        }
+        else
+        {
+            shortUrl.Clicks++;
+        }
+        _db.ShortUrls.Update(shortUrl);
+        await _db.SaveChangesAsync();
     }
 
 }
