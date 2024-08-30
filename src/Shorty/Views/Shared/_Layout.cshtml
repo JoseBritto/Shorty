@@ -1,9 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewData["Description"] = "An open source URL shortener with an easy-to-use API. Simple to self-host and perfect for creating shareable links";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"]</title>
+    <meta name="og:title" content="@ViewData["Title"]">
+    <meta name="description" content="@ViewData["Description"]">
+    <meta name="og:description" content="@ViewData["Description"]">
+    <meta name="og:image" content="/img/icons/darshan/shorty_preview_upscayl.png">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/Shorty.styles.css" asp-append-version="true"/>
