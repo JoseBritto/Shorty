@@ -19,6 +19,6 @@ Replace output-dir with the target output directory name.
 This project is licensed under the [GNU General Public License V3](./LICENSE)
 
 The shorty favicon <img src="https://raw.githubusercontent.com/JoseBritto/Shorty/master/src/Shorty/wwwroot/favicon.svg" width=12/> is by [Darshan Krishna](https://www.linkedin.com/in/darshan-krishna-manoj-50600625a/).  
-The site uses icons by [Css.gg](https://github.com/astrit/css.gg?ref=svgrepo.com) licensed under the MIT License.
+The site uses icons by [Css.gg](https://github.com/astrit/css.gg?ref=svgrepo.com) licensed under the MIT License
 
 
